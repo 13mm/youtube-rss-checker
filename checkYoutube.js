@@ -5,7 +5,7 @@ const CHANNEL_ID = "UC_x5XG1OV2P6uZZ5FSM9Ttw"; // ← 好きなチャンネルID
 const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
 // ← ここだけ後であなたの Webhook URL に書き換える
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1450241492143837224/n4OQWigJaFjihid1VgOcc3jPDKyNr9Eay7XKrjNQm3kaxocJ4aQLlIKXf8XM5GzOv8cu";
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 async function main() {
   console.log("YouTube RSS チェック開始");

@@ -5,7 +5,7 @@ const CHANNELS = [
   "UC47AYUs8AVU1QsT5LhpXjaw",
   "UCnoYhOtV0IXZ6lv2R-ZnB_Q",
   "UCXbAi7tbAcxoDfW5I8hvv8g",
-  "UCXbAi7tbAcxoDfW5I8hvv8g",
+  "UCoKXb95K5h3sME3c9OCBaeA",
   "UCE5GP4BHm2EJx4xyxBVSLlg",
   "UCFBY6EJFIwCQCl-DiYYNKlg",
   "UCXTsCXNGHmePgo3a47hnsAA",

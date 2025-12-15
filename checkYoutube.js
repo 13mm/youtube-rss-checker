@@ -26,30 +26,29 @@ async function checkChannel(channelId) {
 
     if (entries.length === 0) return;
 
-    const latest = entries[0];
-    const title = latest.title[0];
-    const link = latest.link[0].$.href;
-
-    // ★ 投稿時間チェック
-    const published = new Date(latest.published[0]);
     const now = new Date();
-    const diffMinutes = (now - published) / 1000 / 60;
 
-    if (diffMinutes > 5) {
-      console.log("新しい動画ではない:", title);
-      return;
+    // ★ entry を全部ループする
+    for (const video of entries) {
+      const title = video.title[0];
+      const link = video.link[0].$.href;
+      const published = new Date(video.published[0]);
+
+      const diffMinutes = (now - published) / 1000 / 60;
+
+      // ★ 5分以内に投稿された動画だけ通知
+      if (diffMinutes <= 5) {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: `🎬 **新しい動画が投稿されました！**\n${title}\n${link}`
+          })
+        });
+
+        console.log("通知:", title);
+      }
     }
-
-    // ★ 新しい動画だけ通知
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: `🎬 **新しい動画が投稿されました！**\n${title}\n${link}`
-      })
-    });
-
-    console.log("通知送信:", title);
 
   } catch (err) {
     console.error("エラー:", err);

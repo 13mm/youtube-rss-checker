@@ -24,11 +24,10 @@ async function checkChannel(channelId) {
     const data = await parseStringPromise(xml);
     const entries = data.feed.entry || [];
 
-    if (entries.length === 0) return;
-
     const now = new Date();
+    const newVideos = [];
 
-    // ★ entry を全部ループする
+    // ★ 5分以内の動画を全部集める
     for (const video of entries) {
       const title = video.title[0];
       const link = video.link[0].$.href;
@@ -36,19 +35,26 @@ async function checkChannel(channelId) {
 
       const diffMinutes = (now - published) / 1000 / 60;
 
-      // ★ 5分以内に投稿された動画だけ通知
       if (diffMinutes <= 5) {
-        await fetch(WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: `🎬 **新しい動画が投稿されました！**\n${title}\n${link}`
-          })
-        });
-
-        console.log("通知:", title);
+        newVideos.push({ title, link });
       }
     }
+
+    // ★ 新しい動画がなければ何もしない
+    if (newVideos.length === 0) return;
+
+    // ★ まとめて通知
+    const message =
+      `🎬 **新しい動画が投稿されました！（${newVideos.length}件）**\n\n` +
+      newVideos.map(v => `• ${v.title}\n${v.link}`).join("\n");
+
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: message })
+    });
+
+    console.log(`通知送信: ${newVideos.length}件`);
 
   } catch (err) {
     console.error("エラー:", err);

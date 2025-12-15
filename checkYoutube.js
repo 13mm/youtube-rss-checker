@@ -3,7 +3,14 @@ import { parseStringPromise } from "xml2js";
 const CHANNELS = [
   "UC8embhEdS-QrY3K6XcoyyNg",
   "UC47AYUs8AVU1QsT5LhpXjaw",
-  "UCnoYhOtV0IXZ6lv2R-ZnB_Q","UCXbAi7tbAcxoDfW5I8hvv8g","UCXbAi7tbAcxoDfW5I8hvv8g","UCE5GP4BHm2EJx4xyxBVSLlg","UCFBY6EJFIwCQCl-DiYYNKlg","UCXTsCXNGHmePgo3a47hnsAA","UCEbxO0RPlOQIVWrDaeepvuA","UCsJqbdE9SBvLnYdHKOggQbg"
+  "UCnoYhOtV0IXZ6lv2R-ZnB_Q",
+  "UCXbAi7tbAcxoDfW5I8hvv8g",
+  "UCXbAi7tbAcxoDfW5I8hvv8g",
+  "UCE5GP4BHm2EJx4xyxBVSLlg",
+  "UCFBY6EJFIwCQCl-DiYYNKlg",
+  "UCXTsCXNGHmePgo3a47hnsAA",
+  "UCEbxO0RPlOQIVWrDaeepvuA",
+  "UCsJqbdE9SBvLnYdHKOggQbg"
 ];
 
 const WEBHOOK_URL = process.env.WEBHOOK_URL;

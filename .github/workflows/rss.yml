@@ -2,7 +2,7 @@ name: YouTube RSS Checker
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # 毎日0時に実行
+    - cron: "*/5 * * * *" # 毎日0時に実行
   workflow_dispatch:
 
 jobs:

@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { parseStringPromise } from "xml2js";
 
 const CHANNEL_ID = "UC_x5XG1OV2P6uZZ5FSM9Ttw"; // ← 好きなチャンネルIDに変更

@@ -20,3 +20,5 @@ jobs:
 
       - name: Run script
         run: node checkYoutube.js
+env:
+  WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

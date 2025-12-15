@@ -35,7 +35,7 @@ async function checkChannel(channelId) {
 
       const diffMinutes = (now - published) / 1000 / 60;
 
-      if (diffMinutes <= 5) {
+      if (diffMinutes <= 15) {
         newVideos.push({ title, link });
       }
     }

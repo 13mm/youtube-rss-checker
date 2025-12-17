@@ -28,7 +28,10 @@ jobs:
 
       - name: Run script
         env:
-          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WEBHOOK_GAME: ${{ secrets.WEBHOOK_GAME }}
+          WEBHOOK_MUSIC: ${{ secrets.WEBHOOK_MUSIC }}
+          WEBHOOK_VLOG: ${{ secrets.WEBHOOK_VLOG }}
+          WEBHOOK_OTHER: ${{ secrets.WEBHOOK_OTHER }}
         run: node checkYoutube.js
 
       - name: Save seen.json

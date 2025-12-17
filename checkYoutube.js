@@ -37,6 +37,7 @@ async function checkChannel(channelId, seen) {
   const entries = data.feed.entry || [];
 
   const newVideos = [];
+  const newIds = [];
 
   for (const video of entries) {
     const id = video["yt:videoId"][0];
@@ -45,6 +46,7 @@ async function checkChannel(channelId, seen) {
 
     if (!seen.includes(id)) {
       newVideos.push({ id, title, link });
+      newIds.push(id);
     }
   }
 
@@ -58,18 +60,23 @@ async function checkChannel(channelId, seen) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: message })
     });
-
-    const updated = [...newVideos.map(v => v.id), ...seen];
-    saveSeen(updated.slice(0, 100));
   }
+
+  return newIds; // ← 新しいIDを返す
 }
 
 async function main() {
-  const seen = loadSeen();
+  let seen = loadSeen();
 
   for (const id of CHANNELS) {
-    await checkChannel(id, seen);
+    const newIds = await checkChannel(id, seen);
+
+    // ★ メモリ上の seen を更新する（これが重要）
+    seen = [...newIds, ...seen];
   }
+
+  // 最後に保存
+  saveSeen(seen.slice(0, 100));
 }
 
 main();

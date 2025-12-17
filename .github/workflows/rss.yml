@@ -1,5 +1,8 @@
 name: YouTube RSS Checker
 
+permissions:
+  contents: write
+  
 on:
   schedule:
     - cron: "*/15 * * * *"

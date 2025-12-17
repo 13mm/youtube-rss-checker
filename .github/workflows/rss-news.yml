@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: "*/60 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -33,6 +33,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add data/seen.json
+          git add data/seen_news.json
           git commit -m "Update seen.json" || echo "No changes"
           git push

@@ -29,7 +29,7 @@ function isNews(title) {
   );
 }
 
-const SEEN_FILE = "data/seen.json"; // ★共通
+const SEEN_FILE = "data/seen_news.json"; // ★共通
 
 function loadSeen() {
   try {

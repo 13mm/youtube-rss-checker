@@ -1,20 +1,28 @@
 import { parseStringPromise } from "xml2js";
 import fs from "fs";
 
+// ★ チャンネルIDとジャンルを紐づける
 const CHANNELS = [
-  "UC8embhEdS-QrY3K6XcoyyNg",
-  "UC47AYUs8AVU1QsT5LhpXjaw",
-  "UCnoYhOtV0IXZ6lv2R-ZnB_Q",
-  "UCXbAi7tbAcxoDfW5I8hvv8g",
-  "UCoKXb95K5h3sME3c9OCBaeA",
-  "UCE5GP4BHm2EJx4xyxBVSLlg",
-  "UCFBY6EJFIwCQCl-DiYYNKlg",
-  "UCXTsCXNGHmePgo3a47hnsAA",
-  "UCEbxO0RPlOQIVWrDaeepvuA",
-  "UCsJqbdE9SBvLnYdHKOggQbg"
+  { id: "UC8embhEdS-QrY3K6XcoyyNg", genre: "game" },
+  { id: "UC47AYUs8AVU1QsT5LhpXjaw", genre: "game" },
+  { id: "UCnoYhOtV0IXZ6lv2R-ZnB_Q", genre: "music" },
+  { id: "UCXbAi7tbAcxoDfW5I8hvv8g", genre: "music" },
+  { id: "UCoKXb95K5h3sME3c9OCBaeA", genre: "vlog" },
+  { id: "UCE5GP4BHm2EJx4xyxBVSLlg", genre: "vlog" },
+  { id: "UCFBY6EJFIwCQCl-DiYYNKlg", genre: "other" },
+  { id: "UCXTsCXNGHmePgo3a47hnsAA", genre: "other" },
+  { id: "UCEbxO0RPlOQIVWrDaeepvuA", genre: "other" },
+  { id: "UCsJqbdE9SBvLnYdHKOggQbg", genre: "other" }
 ];
 
-const WEBHOOK_URL = process.env.WEBHOOK_URL;
+// ★ ジャンルごとに Webhook を設定
+const WEBHOOKS = {
+  game: process.env.WEBHOOK_GAME,
+  music: process.env.WEBHOOK_MUSIC,
+  vlog: process.env.WEBHOOK_VLOG,
+  other: process.env.WEBHOOK_OTHER
+};
+
 const SEEN_FILE = "data/seen.json";
 
 function loadSeen() {
@@ -29,8 +37,8 @@ function saveSeen(list) {
   fs.writeFileSync(SEEN_FILE, JSON.stringify(list, null, 2));
 }
 
-async function checkChannel(channelId, seen) {
-  const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+async function checkChannel(channel, seen) {
+  const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
   const res = await fetch(RSS_URL);
   const xml = await res.text();
   const data = await parseStringPromise(xml);
@@ -51,31 +59,32 @@ async function checkChannel(channelId, seen) {
   }
 
   if (newVideos.length > 0) {
-    const message =
-      `🎬 **新しい動画が投稿されました！（${newVideos.length}件）**\n\n` +
-      newVideos.map(v => `• ${v.title}\n${v.link}`).join("\n");
+    const webhook = WEBHOOKS[channel.genre];
 
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: message })
-    });
+    if (webhook) {
+      const message =
+        `🎬 **${channel.genre} ジャンルの新着動画（${newVideos.length}件）**\n\n` +
+        newVideos.map(v => `• ${v.title}\n${v.link}`).join("\n");
+
+      await fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message })
+      });
+    }
   }
 
-  return newIds; // ← 新しいIDを返す
+  return newIds;
 }
 
 async function main() {
   let seen = loadSeen();
 
-  for (const id of CHANNELS) {
-    const newIds = await checkChannel(id, seen);
-
-    // ★ メモリ上の seen を更新（これが超重要）
+  for (const channel of CHANNELS) {
+    const newIds = await checkChannel(channel, seen);
     seen = [...newIds, ...seen];
   }
 
-  // 最後に保存
   saveSeen(seen.slice(0, 200));
 }
 

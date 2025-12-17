@@ -71,12 +71,12 @@ async function main() {
   for (const id of CHANNELS) {
     const newIds = await checkChannel(id, seen);
 
-    // ★ メモリ上の seen を更新する（これが重要）
+    // ★ メモリ上の seen を更新（これが超重要）
     seen = [...newIds, ...seen];
   }
 
   // 最後に保存
-  saveSeen(seen.slice(0, 100));
+  saveSeen(seen.slice(0, 200));
 }
 
 main();

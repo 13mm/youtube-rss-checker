@@ -38,6 +38,8 @@ function saveSeen(list) {
 }
 
 async function checkChannel(channel, seen) {
+  console.log("genre:", channel.genre, "webhook:", WEBHOOKS[channel.genre]);
+
   const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
   const res = await fetch(RSS_URL);
   const xml = await res.text();

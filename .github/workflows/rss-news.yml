@@ -1,0 +1,38 @@
+name: YouTube News Checker
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "*/60 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run news checker
+        env:
+          WEBHOOK_NEWS: ${{ secrets.WEBHOOK_NEWS }}
+        run: node keywordNewsChecker.js
+
+      - name: Save seen.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/seen.json
+          git commit -m "Update seen.json" || echo "No changes"
+          git push

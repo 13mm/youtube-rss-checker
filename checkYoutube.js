@@ -6,13 +6,13 @@ const CHANNELS = [
   { id: "UC8embhEdS-QrY3K6XcoyyNg", genre: "vlog" },
   { id: "UC47AYUs8AVU1QsT5LhpXjaw", genre: "other" },
   { id: "UCnoYhOtV0IXZ6lv2R-ZnB_Q", genre: "music" },
-  { id: "UCXbAi7tbAcxoDfW5I8hvv8g", genre: "music" },
+  { id: "UCXbAi7tbAcxoDfW5I8hvv8g", genre: "game" },
   { id: "UCoKXb95K5h3sME3c9OCBaeA", genre: "music" },
   { id: "UCE5GP4BHm2EJx4xyxBVSLlg", genre: "music" },
-  { id: "UCFBY6EJFIwCQCl-DiYYNKlg", genre: "other" },
-  { id: "UCXTsCXNGHmePgo3a47hnsAA", genre: "other" },
-  { id: "UCEbxO0RPlOQIVWrDaeepvuA", genre: "other" },
-  { id: "UCsJqbdE9SBvLnYdHKOggQbg", genre: "other" }
+  { id: "UCFBY6EJFIwCQCl-DiYYNKlg", genre: "music" },
+  { id: "UCXTsCXNGHmePgo3a47hnsAA", genre: "music" },
+  { id: "UCEbxO0RPlOQIVWrDaeepvuA", genre: "music" },
+  { id: "UCsJqbdE9SBvLnYdHKOggQbg", genre: "game" }
 ];
 
 // ★ ジャンルごとに Webhook を設定

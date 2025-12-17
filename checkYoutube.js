@@ -1,4 +1,5 @@
 import { parseStringPromise } from "xml2js";
+import fs from "fs";
 
 const CHANNELS = [
   "UC8embhEdS-QrY3K6XcoyyNg",
@@ -14,36 +15,40 @@ const CHANNELS = [
 ];
 
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
+const SEEN_FILE = "data/seen.json";
 
-async function checkChannel(channelId) {
-  const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-
+function loadSeen() {
   try {
-    const res = await fetch(RSS_URL);
-    const xml = await res.text();
-    const data = await parseStringPromise(xml);
-    const entries = data.feed.entry || [];
+    return JSON.parse(fs.readFileSync(SEEN_FILE, "utf8"));
+  } catch {
+    return [];
+  }
+}
 
-    const now = new Date();
-    const newVideos = [];
+function saveSeen(list) {
+  fs.writeFileSync(SEEN_FILE, JSON.stringify(list, null, 2));
+}
 
-    // ★ 5分以内の動画を全部集める
-    for (const video of entries) {
-      const title = video.title[0];
-      const link = video.link[0].$.href;
-      const published = new Date(video.published[0]);
+async function checkChannel(channelId, seen) {
+  const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  const res = await fetch(RSS_URL);
+  const xml = await res.text();
+  const data = await parseStringPromise(xml);
+  const entries = data.feed.entry || [];
 
-      const diffMinutes = (now - published) / 1000 / 60;
+  const newVideos = [];
 
-      if (diffMinutes <= 15) {
-        newVideos.push({ title, link });
-      }
+  for (const video of entries) {
+    const id = video["yt:videoId"][0];
+    const title = video.title[0];
+    const link = video.link[0].$.href;
+
+    if (!seen.includes(id)) {
+      newVideos.push({ id, title, link });
     }
+  }
 
-    // ★ 新しい動画がなければ何もしない
-    if (newVideos.length === 0) return;
-
-    // ★ まとめて通知
+  if (newVideos.length > 0) {
     const message =
       `🎬 **新しい動画が投稿されました！（${newVideos.length}件）**\n\n` +
       newVideos.map(v => `• ${v.title}\n${v.link}`).join("\n");
@@ -54,16 +59,16 @@ async function checkChannel(channelId) {
       body: JSON.stringify({ content: message })
     });
 
-    console.log(`通知送信: ${newVideos.length}件`);
-
-  } catch (err) {
-    console.error("エラー:", err);
+    const updated = [...newVideos.map(v => v.id), ...seen];
+    saveSeen(updated.slice(0, 100));
   }
 }
 
 async function main() {
+  const seen = loadSeen();
+
   for (const id of CHANNELS) {
-    await checkChannel(id);
+    await checkChannel(id, seen);
   }
 }
 

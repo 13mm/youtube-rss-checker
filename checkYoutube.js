@@ -1,7 +1,6 @@
 import { parseStringPromise } from "xml2js";
 import fs from "fs";
 
-// ★ チャンネルIDとジャンルを紐づける
 const CHANNELS = [
   { id: "UC8embhEdS-QrY3K6XcoyyNg", genre: "vlog" },
   { id: "UC47AYUs8AVU1QsT5LhpXjaw", genre: "other" },
@@ -15,7 +14,6 @@ const CHANNELS = [
   { id: "UCsJqbdE9SBvLnYdHKOggQbg", genre: "game" }
 ];
 
-// ★ ジャンルごとに Webhook を設定
 const WEBHOOKS = {
   game: process.env.WEBHOOK_GAME,
   music: process.env.WEBHOOK_MUSIC,
@@ -37,12 +35,27 @@ function saveSeen(list) {
   fs.writeFileSync(SEEN_FILE, JSON.stringify(list, null, 2));
 }
 
+// ★ RSS が XML かチェックする
+async function fetchRSS(url) {
+  const res = await fetch(url);
+  const text = await res.text();
+
+  if (!text.trim().startsWith("<?xml")) {
+    console.log("RSS が XML ではありません。スキップ:", url);
+    return null;
+  }
+
+  return text;
+}
+
 async function checkChannel(channel, seen) {
   console.log("genre:", channel.genre, "webhook:", WEBHOOKS[channel.genre]);
 
   const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
-  const res = await fetch(RSS_URL);
-  const xml = await res.text();
+  const xml = await fetchRSS(RSS_URL);
+
+  if (!xml) return []; // ★ 落とさずスキップ
+
   const data = await parseStringPromise(xml);
   const entries = data.feed.entry || [];
 

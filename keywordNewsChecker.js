@@ -14,10 +14,8 @@ const CHANNELS = [
   "UCsJqbdE9SBvLnYdHKOggQbg"
 ];
 
-// ★ ニュース専用 Webhook
 const NEWS_WEBHOOK = process.env.WEBHOOK_NEWS;
 
-// ★ ニュース判定（必要最低限）
 function isNews(title) {
   const lower = title.toLowerCase();
   return (
@@ -29,7 +27,7 @@ function isNews(title) {
   );
 }
 
-const SEEN_FILE = "data/seen_news.json"; // ★共通
+const SEEN_FILE = "data/seen_news.json";
 
 function loadSeen() {
   try {
@@ -43,10 +41,25 @@ function saveSeen(list) {
   fs.writeFileSync(SEEN_FILE, JSON.stringify(list, null, 2));
 }
 
+async function fetchRSS(url) {
+  const res = await fetch(url);
+  const text = await res.text();
+
+  // ★ XML で始まっていない → HTML エラーページなのでスキップ
+  if (!text.trim().startsWith("<?xml")) {
+    console.log("RSS が XML ではありません。スキップ:", url);
+    return null;
+  }
+
+  return text;
+}
+
 async function checkChannel(channelId, seen) {
   const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-  const res = await fetch(RSS_URL);
-  const xml = await res.text();
+  const xml = await fetchRSS(RSS_URL);
+
+  if (!xml) return []; // ★ 落とさずスキップ
+
   const data = await parseStringPromise(xml);
   const entries = data.feed.entry || [];
 
